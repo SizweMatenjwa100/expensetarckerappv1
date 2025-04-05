@@ -1,6 +1,6 @@
 import 'dart:math';
-
 import 'package:expensetarckerappv1/screens/Stats/StatScreen.dart';
+import 'package:expensetarckerappv1/screens/add_expense/views/add_expense.dart';
 import 'package:expensetarckerappv1/screens/home/views/mainscreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -40,14 +40,15 @@ class _HomeScreenState extends State<HomeScreen> {
           items: [
             BottomNavigationBarItem(
               backgroundColor: Colors.white,
-                icon: Icon(CupertinoIcons.home, color: index==0? selectedItem: unselectedItem,),
+                icon: Icon(CupertinoIcons.home, color: index==0? selectedItem: unselectedItem,
+                ),
               label: 'Home'
             ),
             BottomNavigationBarItem(
               backgroundColor: Colors.white,
-                icon: Icon(CupertinoIcons.graph_circle,color: index==1? selectedItem: unselectedItem,),
+                icon: Icon(CupertinoIcons.graph_circle,color: index==1? selectedItem: unselectedItem,
+                ),
               label: 'Stats',
-
             ),
           ],
         ),
@@ -55,7 +56,11 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
-          onPressed: (){},
+          onPressed: (){
+          Navigator.push(context,
+              MaterialPageRoute<void>(builder: (BuildContext context)=> const AddExpense())
+          );
+          },
         child: Container(
           width: 60,
           height: 60,
