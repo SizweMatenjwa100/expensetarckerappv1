@@ -19,7 +19,6 @@ class _AddExpenseState extends State<AddExpense> {
   void initState(){
     dateController.text=DateFormat('dd/MM/yy').format(DateTime.now());
     super.initState();
-
   }
   @override
   Widget build(BuildContext context) {
@@ -57,6 +56,10 @@ class _AddExpenseState extends State<AddExpense> {
               ),
               SizedBox(height: 32,),
               TextFormField(
+                readOnly: true,
+                onTap: (){
+
+                },
                 textAlignVertical: TextAlignVertical.center,
                 controller: categoryController,
                 decoration: InputDecoration(
@@ -64,6 +67,70 @@ class _AddExpenseState extends State<AddExpense> {
                     fillColor:Colors.white,
                     hintText: "Categories",hintStyle: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
                     prefixIcon: Icon(FontAwesomeIcons.list,size: 16,color: Colors.grey,),
+                    suffixIcon: IconButton(icon:Icon(FontAwesomeIcons.plus,size: 16,color: Colors.grey,),
+                      onPressed: () {
+                      showDialog(context: (context),
+                          builder: (ctx){
+                        return AlertDialog(
+
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Create a Category", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey.shade600),),
+                              SizedBox(height: 12,),
+
+                              TextFormField(
+
+                                textAlignVertical: TextAlignVertical.center,
+                                decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor:Colors.white,
+                                    hintText: "Name",hintStyle: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide.none
+
+                                    )
+                                ),
+                              ),
+                              SizedBox(height: 16,),
+                              TextFormField(
+
+                                textAlignVertical: TextAlignVertical.center,
+                                decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor:Colors.white,
+                                    hintText: "Icon",hintStyle: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide.none
+
+                                    )
+                                ),
+                              ),
+                              SizedBox(height: 16,),
+                              TextFormField(
+                                textAlignVertical: TextAlignVertical.center,
+                                decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor:Colors.white,
+                                    hintText: "Color",hintStyle: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide.none
+
+                                    )
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+
+                          },
+                      );
+                      },
+                    ),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none
