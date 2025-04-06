@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -27,9 +28,11 @@ class _AddExpenseState extends State<AddExpense> {
 
   ];
 late String iconSelected='';
+Color categoryColor = Colors.blue;
 
   @override
   void initState(){
+
     dateController.text=DateFormat('dd/MM/yy').format(DateTime.now());
     super.initState();
   }
@@ -202,11 +205,29 @@ late String iconSelected='';
                                       onTap: (){
                                         showDialog(context: context, builder:(ctx2){
                                           return AlertDialog(
-                                            content: ColorPicker(
-                                              pickerColor:Colors.blue ,
-                                              onColorChanged: (value) {
-                                            
-                                              },
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                ColorPicker(
+                                                  pickerColor:Colors.blue ,
+                                                  onColorChanged: (value) {
+                                                    setState((){
+                                                      categoryColor=value;
+                                                    });
+
+                                                  },
+                                                ),
+                                                SizedBox(
+                                                  height: 50,
+                                                  child: TextButton(
+                                                      onPressed: (){
+                                                        Navigator.pop(ctx2);
+                                                        print(categoryColor);
+                                                      },
+                                                    child: Text("Save"),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           );
                                         },
@@ -216,9 +237,9 @@ late String iconSelected='';
                                       textAlignVertical: TextAlignVertical.center,
                                       decoration: InputDecoration(
                                           filled: true,
-                                          fillColor: Colors.white,
+                                          fillColor: categoryColor?? Colors.white,
                                           hintText: "Color",
-                                          hintStyle: TextStyle(color: Colors.grey,
+                                          hintStyle: TextStyle( color:categoryColor == null ? categoryColor : Colors.white,
                                               fontWeight: FontWeight.bold),
                                           border: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(12),
@@ -226,6 +247,21 @@ late String iconSelected='';
                                           )
                                       ),
                                     ),
+                                    SizedBox(height: 16,),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: kToolbarHeight,
+
+                                      child: TextButton(onPressed: (){},
+                                        style: TextButton.styleFrom(
+                                            backgroundColor: Colors.black,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12)
+                                            )
+                                        ) , child: Text('Save', style: TextStyle(fontSize: 22, color:Colors.white),
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 ),
                               ),
