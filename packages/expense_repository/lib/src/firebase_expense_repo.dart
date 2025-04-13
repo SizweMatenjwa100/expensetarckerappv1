@@ -23,7 +23,6 @@ class FirebaseExpenseRepo implements ExpenseRepository {
   }
   @override
   Future<List<Category>> getCategory() async {
-
     try {
       return await categoryCollection
           .get()

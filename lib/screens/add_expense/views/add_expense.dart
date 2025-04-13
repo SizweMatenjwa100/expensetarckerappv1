@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:expense_repository/src/models/category.dart';
+
 
 class AddExpense extends StatefulWidget {
   const AddExpense({super.key});
@@ -101,7 +103,8 @@ Color categoryColor = Colors.blue;
                                     Text("Create a Category", style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.grey.shade600),),
+                                        color: Colors.grey.shade600),
+                                    ),
                                     SizedBox(height: 12,),
 
                                     TextFormField(
@@ -221,8 +224,11 @@ Color categoryColor = Colors.blue;
                                                   height: 50,
                                                   child: TextButton(
                                                       onPressed: (){
+                                                        Category category= Category.empty;
+
+
                                                         Navigator.pop(ctx2);
-                                                        print(categoryColor);
+
                                                       },
                                                     child: Text("Save"),
                                                   ),
