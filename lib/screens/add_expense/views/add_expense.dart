@@ -1,11 +1,12 @@
+import 'package:expensetarckerappv1/screens/blocs/create_category_bloc/create_category_bloc.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_repository/src/models/category.dart';
-
+import 'package:uuid/uuid.dart';
 
 class AddExpense extends StatefulWidget {
   const AddExpense({super.key});
@@ -90,8 +91,13 @@ Color categoryColor = Colors.blue;
                       showDialog(context: (context),
                           builder: (ctx){
                         late bool isExpended=false;
+                        TextEditingController categoryColorController=TextEditingController();
+                        TextEditingController categoryNameController=TextEditingController();
+                        TextEditingController categoryIconController=TextEditingController();
+
+
                         return StatefulBuilder(
-                          builder: (context,setState) {
+                          builder: (ctx,setState) {
                             return AlertDialog(
 
                               content: SizedBox(
@@ -108,7 +114,7 @@ Color categoryColor = Colors.blue;
                                     SizedBox(height: 12,),
 
                                     TextFormField(
-
+                                      controller: categoryNameController,
                                       textAlignVertical: TextAlignVertical.center,
                                       decoration: InputDecoration(
                                           filled: true,
@@ -126,6 +132,7 @@ Color categoryColor = Colors.blue;
                                     ),
                                     SizedBox(height: 16,),
                                     TextFormField(
+                                      controller: categoryIconController,
                                       onTap: () {
                                         setState(() {
                                           isExpended = !isExpended;
@@ -205,36 +212,47 @@ Color categoryColor = Colors.blue;
                                         : Container(),
                                     SizedBox(height: 16,),
                                     TextFormField(
+                                      controller: categoryColorController,
+
                                       onTap: (){
                                         showDialog(context: context, builder:(ctx2){
-                                          return AlertDialog(
-                                            content: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                ColorPicker(
-                                                  pickerColor:Colors.blue ,
-                                                  onColorChanged: (value) {
-                                                    setState((){
-                                                      categoryColor=value;
-                                                    });
+                                          return BlocProvider.value(
+                                            value: context.read<CreateCategoryBloc>(),
+                                            child: BlocListener<CreateCategoryBloc, CreateCategoryState>(
+                                           listener: (context, state) {
+                                                   // TODO: implement listener
+                                                 },
+                                              child: AlertDialog(
 
-                                                  },
-                                                ),
-                                                SizedBox(
-                                                  height: 50,
-                                                  child: TextButton(
-                                                      onPressed: (){
-                                                        Category category= Category.empty;
+                                              content: Column(
 
+                                                mainAxisSize: MainAxisSize.min,
 
-                                                        Navigator.pop(ctx2);
+                                                children: [
+                                                  ColorPicker(
+                                                    pickerColor:Colors.blue ,
+                                                    onColorChanged: (value) {
+                                                      setState((){
+                                                        categoryColor=value;
+                                                      });
 
-                                                      },
-                                                    child: Text("Save"),
+                                                    },
                                                   ),
-                                                ),
-                                              ],
+                                                  SizedBox(
+                                                    height: 50,
+                                                    child: TextButton(
+                                                        onPressed: (){
+
+                                                          Navigator.pop(ctx2);
+
+                                                        },
+                                                      child: Text("Save"),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
+),
                                           );
                                         },
                                         );
@@ -258,7 +276,15 @@ Color categoryColor = Colors.blue;
                                       width: double.infinity,
                                       height: kToolbarHeight,
 
-                                      child: TextButton(onPressed: (){},
+                                      child: TextButton(onPressed: (){
+                                        Category category= Category.empty;
+                                        category.categoryID=const Uuid().v1();
+                                        category.name=categoryNameController.text;
+                                        category.icon=iconSelected;
+                                        category.color=categoryColor.toString();
+                                        context.read<CreateCategoryBloc>().add(CreateCategory(category));
+
+                                      },
                                         style: TextButton.styleFrom(
                                             backgroundColor: Colors.black,
                                             shape: RoundedRectangleBorder(
