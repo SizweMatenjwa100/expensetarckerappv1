@@ -96,7 +96,18 @@ Color categoryColor = Colors.blue;
                         TextEditingController categoryIconController=TextEditingController();
 
 
-                        return StatefulBuilder(
+                        return BlocProvider.value(
+                          value: context.read<CreateCategoryBloc>(),
+                          child: BlocListener<CreateCategoryBloc,CreateCategoryState>(
+                           listener: (context, state) {
+                               if(state is CreateCategorySuccess){
+                                 Navigator.pop(ctx);
+                               }
+                               else {
+
+                               }
+                              },
+                            child: StatefulBuilder(
                           builder: (ctx,setState) {
                             return AlertDialog(
 
@@ -216,44 +227,36 @@ Color categoryColor = Colors.blue;
 
                                       onTap: (){
                                         showDialog(context: context, builder:(ctx2){
-                                          return BlocProvider.value(
-                                            value: context.read<CreateCategoryBloc>(),
-                                            child: BlocListener<CreateCategoryBloc, CreateCategoryState>(
-                                           listener: (context, state) {
-                                                   // TODO: implement listener
-                                                 },
-                                              child: AlertDialog(
+                                          return AlertDialog(
+                                          
+                                          content: Column(
 
-                                              content: Column(
+                                            mainAxisSize: MainAxisSize.min,
 
-                                                mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              ColorPicker(
+                                                pickerColor:Colors.blue ,
+                                                onColorChanged: (value) {
+                                                  setState((){
+                                                    categoryColor=value;
+                                                  });
 
-                                                children: [
-                                                  ColorPicker(
-                                                    pickerColor:Colors.blue ,
-                                                    onColorChanged: (value) {
-                                                      setState((){
-                                                        categoryColor=value;
-                                                      });
+                                                },
+                                              ),
+                                              SizedBox(
+                                                height: 50,
+                                                child: TextButton(
+                                                    onPressed: (){
+
+                                                      Navigator.pop(ctx2);
 
                                                     },
-                                                  ),
-                                                  SizedBox(
-                                                    height: 50,
-                                                    child: TextButton(
-                                                        onPressed: (){
-
-                                                          Navigator.pop(ctx2);
-
-                                                        },
-                                                      child: Text("Save"),
-                                                    ),
-                                                  ),
-                                                ],
+                                                  child: Text("Save Color"),
+                                                ),
                                               ),
-                                            ),
-),
-                                          );
+                                            ],
+                                          ),
+                                                                                    );
                                         },
                                         );
                                       },
@@ -299,7 +302,9 @@ Color categoryColor = Colors.blue;
                               ),
                             );
                           }
-                        );
+                        ),
+),
+);
                         },
                       );
                       },
