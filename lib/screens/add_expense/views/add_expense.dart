@@ -1,6 +1,8 @@
 import 'package:expensetarckerappv1/screens/add_expense/views/category_creation.dart';
+import 'package:expensetarckerappv1/screens/blocs/get_category_bloc/get_category_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -44,138 +46,184 @@ Color categoryColor = Colors.blue;
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.surface,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Add Expense", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),),
-              SizedBox(height: 16,),
-              SizedBox(
-                width: MediaQuery.of(context).size.width*0.70,
-                child: TextFormField(
-                  controller: expenseController,
-                  textAlignVertical: TextAlignVertical.center,
-
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor:Colors.white,
-                    label: Text('R', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey,fontSize: 22)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none
-
-                    )
-                  ),
-                ),
-              ),
-              SizedBox(height: 32,),
-              TextFormField(
-                readOnly: true,
-                onTap: (){
-
-                },
+        body: BlocBuilder<GetCategoryBloc, GetCategoryState>(
+  builder: (context, state) {
+    if(state is GetCategorySuccess) {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("Add Expense",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),),
+            SizedBox(height: 16,),
+            SizedBox(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width * 0.70,
+              child: TextFormField(
+                controller: expenseController,
                 textAlignVertical: TextAlignVertical.center,
-                controller: categoryController,
+
                 decoration: InputDecoration(
                     filled: true,
-                    fillColor:Colors.white,
-                    hintText: "Categories",hintStyle: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
-                    prefixIcon: Icon(FontAwesomeIcons.list,size: 16,color: Colors.grey,),
-                    suffixIcon: IconButton(icon:Icon(FontAwesomeIcons.plus,size: 16,color: Colors.grey,),
-                      onPressed: () {
-                      getCategoryCreation(context);
-
-                      },
-                    ),
+                    fillColor: Colors.white,
+                    label: Text('R', style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                        fontSize: 22)),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top:Radius.circular(12)
-                        ),
+                        borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none
 
                     )
                 ),
               ),
-              Container(
-                height: 200,
-                width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(12),
-                  ),
-                ),
-                  child:ListView.builder(
-                    itemCount: 3,
-                      itemBuilder: (context, int i){
-                      return Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ListTile(
-                              leading: Image.asset('assets/burger.png', scale: 2,
-                              ),
-                              title: Text("Food"),
-                              tileColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0)
-                              ),
-                            ),
-                          )
-                      );
+            ),
+            SizedBox(height: 32,),
+            TextFormField(
+              readOnly: true,
+              onTap: () {
+
+              },
+              textAlignVertical: TextAlignVertical.center,
+              controller: categoryController,
+              decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: "Categories",
+                  hintStyle: TextStyle(color: Colors.grey,
+                      fontWeight: FontWeight.bold),
+                  prefixIcon: Icon(
+                    FontAwesomeIcons.list, size: 16, color: Colors.grey,),
+
+                  suffixIcon: IconButton(icon: Icon(
+                    FontAwesomeIcons.plus, size: 16, color: Colors.grey,),
+                    onPressed: () async {
+                      final newCategory = await getCategoryCreation(context);
+                      if (newCategory != null && context.mounted) {
+                        context.read<GetCategoryBloc>().add(GetCategories());
+                      }
+                      else {
+                        debugPrint('User cancelled category creation or no category was returned.');
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No category created",)));
                       }
 
+                    },
+
                   ),
-              ),
-              SizedBox(height: 16,),
-
-              TextFormField(
-                controller: dateController,
-                readOnly: true,
-                onTap: () async {
-                  DateTime? newDate= await showDatePicker(
-                      context: context,
-                      initialDate: selectDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days:365),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(12)
                       ),
-                  );
-                  if(newDate!= null){
-                    dateController.text=DateFormat('dd/MM/yy').format(newDate);
-                    selectDate=newDate;
-                  }
-                },
-                textAlignVertical: TextAlignVertical.center,
-                decoration: InputDecoration(
-                    filled: true,
-                    fillColor:Colors.white,
-                    hintText: "Date",hintStyle: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
-                    prefixIcon: Icon(FontAwesomeIcons.clock,size: 16,color: Colors.grey,),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none
+                      borderSide: BorderSide.none
 
-                    )
+                  )
+              ),
+            ),
+            Container(
+              height: 200,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(12),
                 ),
               ),
-              SizedBox(height: 22,),
-              SizedBox(
-                width: double.infinity,
-                height: kToolbarHeight,
+              child:ListView.builder(
+                        itemCount: state.categories.length,
+                        itemBuilder: (context, int i) {
+                          return Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ListTile(
+                                  leading: Image.asset(
+                                    'assets/${state.categories[i].icon}.png',
+                                    scale: 2,
+                                  ),
+                                  title: Text(state.categories[i].name,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Colors.white),),
+                                  tileColor: Color(state.categories[i].color),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          8.0)
+                                  ),
+                                ),
+                              )
+                          );
+                        }
 
-                child: TextButton(onPressed: (){},
-                  style: TextButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)
-                  )
-                ) , child: Text('Save', style: TextStyle(fontSize: 22, color:Colors.white),
-                ),
-                ),
               )
-            ],
-          ),
+
+            ),
+            SizedBox(height: 16,),
+
+            TextFormField(
+              controller: dateController,
+              readOnly: true,
+              onTap: () async {
+                DateTime? newDate = await showDatePicker(
+                  context: context,
+                  initialDate: selectDate,
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(Duration(days: 365),
+                  ),
+                );
+                if (newDate != null) {
+                  dateController.text = DateFormat('dd/MM/yy').format(newDate);
+                  selectDate = newDate;
+                }
+              },
+              textAlignVertical: TextAlignVertical.center,
+              decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: "Date",
+                  hintStyle: TextStyle(color: Colors.grey,
+                      fontWeight: FontWeight.bold),
+                  prefixIcon: Icon(
+                    FontAwesomeIcons.clock, size: 16, color: Colors.grey,),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none
+
+                  )
+              ),
+            ),
+            SizedBox(height: 22,),
+            SizedBox(
+              width: double.infinity,
+              height: kToolbarHeight,
+
+              child: TextButton(onPressed: () {},
+                style: TextButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)
+                    )
+                ), child: Text('Save', style: TextStyle(
+                    fontSize: 22, color: Colors.white),
+                ),
+              ),
+            )
+          ],
         ),
+      );
+    }else{
+      return const
+      Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+  },
+),
       ),
     );
   }

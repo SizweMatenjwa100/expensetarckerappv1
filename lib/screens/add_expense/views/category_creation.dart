@@ -8,8 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:expense_repository/src/models/category.dart';
 import 'package:uuid/uuid.dart';
 
-getCategoryCreation(BuildContext context){
-  showDialog(context: (context),
+import '../../blocs/get_category_bloc/get_category_bloc.dart';
+
+Future getCategoryCreation(BuildContext context)  => showDialog(context: (context),
     builder: (ctx){
       late bool isExpended=false;
       TextEditingController categoryColorController=TextEditingController();
@@ -24,12 +25,10 @@ getCategoryCreation(BuildContext context){
         'shopping',
         'tech',
         'travel'
-
-
       ];
       late String iconSelected='';
       Color categoryColor = Colors.blue;
-
+      Category category = Category.empty;
 
       return BlocProvider.value(
         value: context.read<CreateCategoryBloc>(),
@@ -38,7 +37,11 @@ getCategoryCreation(BuildContext context){
             return  BlocListener<CreateCategoryBloc, CreateCategoryState>(
               listener: (context, state) {
                 if (state is CreateCategorySuccess) {
-                  Navigator.pop(ctx);
+                  context.read<GetCategoryBloc>().add(GetCategories());
+                  Navigator.pop(ctx, category);
+
+
+
                 }
                 else if (state is CreateCategoryLoading) {
                   setState(() {
@@ -229,11 +232,14 @@ getCategoryCreation(BuildContext context){
                         )
                             :
                         TextButton(onPressed: () {
-                          Category category = Category.empty;
-                          category.categoryID = const Uuid().v1();
-                          category.name = categoryNameController.text;
-                          category.icon = iconSelected;
-                          category.color = categoryColor.toString();
+                          setState((){
+                            category.categoryID = const Uuid().v1();
+                            category.name = categoryNameController.text;
+                            category.icon = iconSelected;
+                          });
+
+
+                          category.color = categoryColor.value;
                           context.read<CreateCategoryBloc>().add(
                               CreateCategory(category));
                         },
@@ -258,4 +264,3 @@ getCategoryCreation(BuildContext context){
       );
     },
   );
-}
