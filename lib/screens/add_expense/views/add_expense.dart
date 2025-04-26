@@ -1,10 +1,13 @@
+import 'package:expense_repository/expense_repository.dart';
 import 'package:expensetarckerappv1/screens/add_expense/views/category_creation.dart';
+import 'package:expensetarckerappv1/screens/blocs/create_expense_bloc/create_expense_bloc.dart';
 import 'package:expensetarckerappv1/screens/blocs/get_category_bloc/get_category_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class AddExpense extends StatefulWidget {
   const AddExpense({super.key});
@@ -30,16 +33,31 @@ class _AddExpenseState extends State<AddExpense> {
   ];
 late String iconSelected='';
 Color categoryColor = Colors.blue;
+late Expense expense;
+bool isLoading=false;
+
 
   @override
   void initState(){
 
     dateController.text=DateFormat('dd/MM/yy').format(DateTime.now());
+    expense=Expense.empty;
+    expense.expenseID=Uuid().v1();
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return BlocListener<CreateExpenseBloc,CreateExpenseState>(
+  listener: (context, state) {
+   if(state is CreateExpenseSuccess){
+     Navigator.pop(context);
+   }else if(state is CreateExpenseLoading){
+setState(() {
+  isLoading=true;
+});
+   }
+  },
+  child: GestureDetector(
       onTap: ()=>FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -91,12 +109,17 @@ Color categoryColor = Colors.blue;
               controller: categoryController,
               decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: expense.category==Category.empty ? Colors.white :Color(expense.category.color),
                   hintText: "Categories",
                   hintStyle: TextStyle(color: Colors.grey,
                       fontWeight: FontWeight.bold),
-                  prefixIcon: Icon(
-                    FontAwesomeIcons.list, size: 16, color: Colors.grey,),
+                  prefixIcon: expense.category==Category.empty ? Icon(
+                    FontAwesomeIcons.list, size: 16, color: Colors.grey,)
+                  :
+                  Image.asset(
+                    'assets/${expense.category.icon}.png',
+                    scale: 11,
+                  ),
 
                   suffixIcon: IconButton(icon: Icon(
                     FontAwesomeIcons.plus, size: 16, color: Colors.grey,),
@@ -141,6 +164,12 @@ Color categoryColor = Colors.blue;
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ListTile(
+                                  onTap: (){
+                                    setState(() {
+                                      expense.category=state.categories[i];
+                                      categoryController.text=expense.category.name;
+                                    });
+                                  },
                                   leading: Image.asset(
                                     'assets/${state.categories[i].icon}.png',
                                     scale: 2,
@@ -171,14 +200,16 @@ Color categoryColor = Colors.blue;
               onTap: () async {
                 DateTime? newDate = await showDatePicker(
                   context: context,
-                  initialDate: selectDate,
+                  initialDate: expense.date,
                   firstDate: DateTime.now(),
                   lastDate: DateTime.now().add(Duration(days: 365),
                   ),
                 );
                 if (newDate != null) {
                   dateController.text = DateFormat('dd/MM/yy').format(newDate);
-                  selectDate = newDate;
+                  //selectDate = newDate;
+                  expense.date=newDate;
+
                 }
               },
               textAlignVertical: TextAlignVertical.center,
@@ -202,7 +233,18 @@ Color categoryColor = Colors.blue;
               width: double.infinity,
               height: kToolbarHeight,
 
-              child: TextButton(onPressed: () {},
+              child: isLoading?
+                  Center(
+                child: CircularProgressIndicator(),
+              )
+              :
+              TextButton(onPressed: () {
+                setState(() {
+                  expense.amount=int.parse(expenseController.text);
+                });
+               context.read<CreateExpenseBloc>().add(CreateExpense(expense));
+
+              },
                 style: TextButton.styleFrom(
                     backgroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
@@ -211,8 +253,9 @@ Color categoryColor = Colors.blue;
                 ), child: Text('Save', style: TextStyle(
                     fontSize: 22, color: Colors.white),
                 ),
-              ),
-            )
+              )
+
+            ),
           ],
         ),
       );
@@ -225,6 +268,7 @@ Color categoryColor = Colors.blue;
   },
 ),
       ),
-    );
+    ),
+);
   }
 }

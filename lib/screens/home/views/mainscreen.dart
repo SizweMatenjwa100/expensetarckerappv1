@@ -1,10 +1,12 @@
 import 'dart:math';
+import 'package:expense_repository/expense_repository.dart';
 import 'package:expensetarckerappv1/data/data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Mainscreen extends StatelessWidget {
-  const Mainscreen({super.key});
+  final List<Expense> expenses;
+  const Mainscreen(this.expenses,{super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +167,7 @@ class Mainscreen extends StatelessWidget {
             SizedBox(height: 20,),
             Expanded(
               child: ListView.builder(
-                itemCount: transactionData.length,
+                itemCount: expenses.length,
                   itemBuilder: (context, int i){
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
