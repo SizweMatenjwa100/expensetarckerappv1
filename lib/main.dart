@@ -1,4 +1,4 @@
-import 'package:expensetarckerappv1/app_view.dart';
+
 import 'package:expensetarckerappv1/screens/home/views/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
